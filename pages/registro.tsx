@@ -28,10 +28,10 @@ export default function RegistroPage() {
   useEffect(() => {
     // Cargar datos para selects al montar el componente
     async function fetchData() {
-      let { data: proyectosData, error: errorProyectos } = await supabase.from('proyectos').select('nombre');
-      let { data: coordinadoresData, error: errorCoordinadores } = await supabase.from('coordinadores').select('nombre');
-      let { data: sstsData, error: errorSsts } = await supabase.from('ssts').select('nombre');
-      let { data: operariosData, error: errorOperarios } = await supabase.from('operarios').select('nombre');
+      const { data: proyectosData, error: errorProyectos } = await supabase.from('proyectos').select('nombre');
+      const { data: coordinadoresData, error: errorCoordinadores } = await supabase.from('coordinadores').select('nombre');
+      const { data: sstsData, error: errorSsts } = await supabase.from('ssts').select('nombre');
+      const { data: operariosData, error: errorOperarios } = await supabase.from('operarios').select('nombre');
 
       if (!errorProyectos && proyectosData) setProyectos(proyectosData.map(p => p.nombre));
       if (!errorCoordinadores && coordinadoresData) setCoordinadores(coordinadoresData.map(c => c.nombre));
