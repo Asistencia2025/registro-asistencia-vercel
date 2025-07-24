@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
-export default function RegistroPage() {
-  const router = useRouter();
+export default function Registro() {
+  const [proyectos, setProyectos] = useState<any[]>([]);
+  const [coordinadores, setCoordinadores] = useState<any[]>([]);
+  const [ssts, setSsts] = useState<any[]>([]);
+  const [operarios, setOperarios] = useState<any[]>([]);
 
-  const [formData, setFormData] = useState({
+  const [formulario, setFormulario] = useState({
     proyecto: '',
     coordinador: '',
     sst: '',
@@ -14,139 +16,95 @@ export default function RegistroPage() {
     operario3: '',
     operario4: '',
     operario5: '',
-    operario6: ''
+    operario6: '',
   });
 
-  const [mensaje, setMensaje] = useState('');
-
-  // Estados para listas desplegables
-  const [proyectos, setProyectos] = useState<string[]>([]);
-  const [coordinadores, setCoordinadores] = useState<string[]>([]);
-  const [ssts, setSsts] = useState<string[]>([]);
-  const [operarios, setOperarios] = useState<string[]>([]);
-
   useEffect(() => {
-    // Cargar datos para selects al montar el componente
-    async function fetchData() {
-      const { data: proyectosData, error: errorProyectos } = await supabase.from('proyectos').select('nombre');
-      const { data: coordinadoresData, error: errorCoordinadores } = await supabase.from('coordinadores').select('nombre');
-      const { data: sstsData, error: errorSsts } = await supabase.from('ssts').select('nombre');
-      const { data: operariosData, error: errorOperarios } = await supabase.from('operarios').select('nombre');
+    const fetchData = async () => {
+      const { data: proyectosData, error: errorProyectos } = await supabase.from('proyectos').select('*');
+      const { data: coordinadoresData, error: errorCoordinadores } = await supabase.from('coordinadores').select('*');
+      const { data: sstsData, error: errorSsts } = await supabase.from('sst').select('*');
+      const { data: operariosData, error: errorOperarios } = await supabase.from('operarios').select('*');
 
-      if (!errorProyectos && proyectosData) setProyectos(proyectosData.map(p => p.nombre));
-      if (!errorCoordinadores && coordinadoresData) setCoordinadores(coordinadoresData.map(c => c.nombre));
-      if (!errorSsts && sstsData) setSsts(sstsData.map(s => s.nombre));
-      if (!errorOperarios && operariosData) setOperarios(operariosData.map(o => o.nombre));
-    }
+      if (!errorProyectos) setProyectos(proyectosData || []);
+      if (!errorCoordinadores) setCoordinadores(coordinadoresData || []);
+      if (!errorSsts) setSsts(sstsData || []);
+      if (!errorOperarios) setOperarios(operariosData || []);
+    };
+
     fetchData();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormulario({ ...formulario, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { error } = await supabase.from('registros_asistencia').insert([formData]);
+    const nuevaAsistencia = {
+      ...formulario,
+      fecha: new Date().toISOString(),
+    };
+
+    const { error } = await supabase.from('asistencias').insert([nuevaAsistencia]);
 
     if (error) {
+      alert('Error al registrar la asistencia.');
       console.error(error);
-      setMensaje('Error al guardar la información.');
     } else {
-      router.push('/confirmacion');
+      alert('Asistencia registrada con éxito.');
     }
   };
 
   return (
-    <div style={containerStyle}>
-      <form onSubmit={handleSubmit} style={formStyle}>
-        <h2 style={{ textAlign: 'center', marginBottom: 20, color: '#1b3a2f' }}>Registro de Asistencia</h2>
-        {mensaje && <p style={{ color: 'red' }}>{mensaje}</p>}
+    <div className="min-h-screen bg-green-900 flex items-center justify-center">
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-md w-full max-w-xl space-y-4">
+        <h2 className="text-2xl font-bold mb-4 text-center text-green-800">Registro de Asistencia</h2>
 
-        <label>Proyecto</label>
-        <select name="proyecto" value={formData.proyecto} onChange={handleChange} required style={inputStyle}>
-          <option value="">Seleccione un proyecto</option>
-          {proyectos.map(p => (
-            <option key={p} value={p}>{p}</option>
+        <select name="proyecto" value={formulario.proyecto} onChange={handleChange} className="w-full p-2 border rounded">
+          <option value="">Seleccione Proyecto</option>
+          {proyectos.map((p) => (
+            <option key={p.id} value={p.nombre}>{p.nombre}</option>
           ))}
         </select>
 
-        <label>Coordinador</label>
-        <select name="coordinador" value={formData.coordinador} onChange={handleChange} required style={inputStyle}>
-          <option value="">Seleccione un coordinador</option>
-          {coordinadores.map(c => (
-            <option key={c} value={c}>{c}</option>
+        <select name="coordinador" value={formulario.coordinador} onChange={handleChange} className="w-full p-2 border rounded">
+          <option value="">Seleccione Coordinador</option>
+          {coordinadores.map((c) => (
+            <option key={c.id} value={c.nombre}>{c.nombre}</option>
           ))}
         </select>
 
-        <label>SST</label>
-        <select name="sst" value={formData.sst} onChange={handleChange} required style={inputStyle}>
-          <option value="">Seleccione un SST</option>
-          {ssts.map(s => (
-            <option key={s} value={s}>{s}</option>
+        <select name="sst" value={formulario.sst} onChange={handleChange} className="w-full p-2 border rounded">
+          <option value="">Seleccione SST</option>
+          {ssts.map((s) => (
+            <option key={s.id} value={s.nombre}>{s.nombre}</option>
           ))}
         </select>
 
-        {[1, 2, 3, 4, 5, 6].map(n => (
-          <div key={n}>
-            <label>Operario {n}</label>
-            <select
-              name={`operario${n}`}
-              value={formData[`operario${n}` as keyof typeof formData]}
-              onChange={handleChange}
-              required={n === 1}
-              style={inputStyle}
-            >
-              <option value="">Seleccione un operario</option>
-              {operarios.map(o => (
-                <option key={o} value={o}>{o}</option>
-              ))}
-            </select>
-          </div>
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <select
+            key={i}
+            name={`operario${i}`}
+            value={formulario[`operario${i}` as keyof typeof formulario]}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          >
+            <option value="">{`Seleccione Operario ${i}`}</option>
+            {operarios.map((o) => (
+              <option key={o.id} value={o.nombre}>{o.nombre}</option>
+            ))}
+          </select>
         ))}
 
-        <button type="submit" style={buttonStyle}>Registrar</button>
+        <button
+          type="submit"
+          className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition"
+        >
+          Registrar Asistencia
+        </button>
       </form>
     </div>
   );
 }
-
-const containerStyle = {
-  minHeight: '100vh',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  backgroundColor: '#1b3a2f',
-  padding: '1rem'
-};
-
-const formStyle = {
-  backgroundColor: '#fff',
-  padding: '30px',
-  borderRadius: '15px',
-  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-  width: '100%',
-  maxWidth: '400px'
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '8px',
-  marginBottom: '12px',
-  border: '1px solid #ccc',
-  borderRadius: '6px'
-};
-
-const buttonStyle = {
-  width: '100%',
-  padding: '10px',
-  backgroundColor: '#28a745',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '6px',
-  fontWeight: 'bold',
-  fontSize: '16px',
-  marginTop: '10px'
-};
