@@ -17,19 +17,20 @@ export default function Registro() {
     operario4: '',
     operario5: '',
     operario6: '',
+    tipo_registro: '', // Entrada o Salida
   });
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: proyectosData, error: errorProyectos } = await supabase.from('proyectos').select('*');
-      const { data: coordinadoresData, error: errorCoordinadores } = await supabase.from('coordinadores').select('*');
-      const { data: sstsData, error: errorSsts } = await supabase.from('sst').select('*');
-      const { data: operariosData, error: errorOperarios } = await supabase.from('operarios').select('*');
+      const { data: proyectosData } = await supabase.from('proyectos').select('*');
+      const { data: coordinadoresData } = await supabase.from('coordinadores').select('*');
+      const { data: sstsData } = await supabase.from('sst').select('*');
+      const { data: operariosData } = await supabase.from('operarios').select('*');
 
-      if (!errorProyectos) setProyectos(proyectosData || []);
-      if (!errorCoordinadores) setCoordinadores(coordinadoresData || []);
-      if (!errorSsts) setSsts(sstsData || []);
-      if (!errorOperarios) setOperarios(operariosData || []);
+      if (proyectosData) setProyectos(proyectosData);
+      if (coordinadoresData) setCoordinadores(coordinadoresData);
+      if (sstsData) setSsts(sstsData);
+      if (operariosData) setOperarios(operariosData);
     };
 
     fetchData();
@@ -97,6 +98,12 @@ export default function Registro() {
             ))}
           </select>
         ))}
+
+        <select name="tipo_registro" value={formulario.tipo_registro} onChange={handleChange} className="w-full p-2 border rounded">
+          <option value="">Seleccione Tipo de Registro</option>
+          <option value="Entrada">Entrada</option>
+          <option value="Salida">Salida</option>
+        </select>
 
         <button
           type="submit"
