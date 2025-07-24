@@ -1,4 +1,3 @@
-// pages/index.tsx
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabaseClient';
@@ -13,7 +12,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -159,4 +158,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
