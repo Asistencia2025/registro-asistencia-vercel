@@ -70,113 +70,99 @@ export default function Registro() {
     }
   };
 
-  // Componente para select con label flotante
-  const FloatingSelect = ({
-    label,
-    name,
-    value,
-    options,
-    onChange,
-    required = false,
-  }: {
-    label: string;
-    name: string;
-    value: string;
-    options: { value: string; label: string }[];
-    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-    required?: boolean;
-  }) => (
-    <div className="relative w-full">
-      <select
-        id={name}
-        name={name}
-        value={value}
-        onChange={onChange}
-        required={required}
-        className="peer block w-full appearance-none rounded-xl border border-green-700 bg-transparent px-3 pt-6 pb-2 text-green-900 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
-      >
-        <option value="" disabled hidden></option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-      <label
-        htmlFor={name}
-        className="absolute left-3 top-2 text-green-700 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-green-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-green-700 pointer-events-none"
-      >
-        {label}
-      </label>
-      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-green-700">
-        ▼
-      </div>
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-green-900 flex items-center justify-center p-6">
+    <div className="min-h-screen flex items-center justify-center bg-green-900">
       <form
         onSubmit={handleSubmit}
-        className="bg-white bg-opacity-90 backdrop-blur-md p-10 rounded-3xl shadow-2xl w-full max-w-2xl space-y-8"
+        className="bg-white p-8 rounded-xl shadow-lg w-full max-w-xl text-center space-y-6"
       >
-        <h2 className="text-4xl font-extrabold text-center text-green-900 mb-8 tracking-wide">
-          Registro de Asistencia
-        </h2>
+        <h2 className="text-3xl font-bold text-green-900">Registro de Asistencia</h2>
 
-        <FloatingSelect
-          label="Proyecto"
+        <select
           name="proyecto"
           value={formulario.proyecto}
           onChange={handleChange}
+          className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           required
-          options={proyectos.map((p) => ({ value: p.nombre, label: p.nombre }))}
-        />
+        >
+          <option value="" disabled>
+            Seleccione Proyecto
+          </option>
+          {proyectos.map((p) => (
+            <option key={p.id} value={p.nombre}>
+              {p.nombre}
+            </option>
+          ))}
+        </select>
 
-        <FloatingSelect
-          label="Coordinador"
+        <select
           name="coordinador"
           value={formulario.coordinador}
           onChange={handleChange}
+          className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           required
-          options={coordinadores.map((c) => ({ value: c.nombre, label: c.nombre }))}
-        />
+        >
+          <option value="" disabled>
+            Seleccione Coordinador
+          </option>
+          {coordinadores.map((c) => (
+            <option key={c.id} value={c.nombre}>
+              {c.nombre}
+            </option>
+          ))}
+        </select>
 
-        <FloatingSelect
-          label="SST"
+        <select
           name="sst"
           value={formulario.sst}
           onChange={handleChange}
+          className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           required
-          options={ssts.map((s) => ({ value: s.nombre, label: s.nombre }))}
-        />
+        >
+          <option value="" disabled>
+            Seleccione SST
+          </option>
+          {ssts.map((s) => (
+            <option key={s.id} value={s.nombre}>
+              {s.nombre}
+            </option>
+          ))}
+        </select>
 
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <FloatingSelect
+          <select
             key={i}
-            label={`Operario ${i}`}
             name={`operario${i}`}
             value={formulario[`operario${i}` as keyof typeof formulario]}
             onChange={handleChange}
-            options={operarios.map((o) => ({ value: o.nombre, label: o.nombre }))}
-          />
+            className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option value="">{`Seleccione Operario ${i}`}</option>
+            {operarios.map((o) => (
+              <option key={o.id} value={o.nombre}>
+                {o.nombre}
+              </option>
+            ))}
+          </select>
         ))}
 
-        <FloatingSelect
-          label="Tipo de Registro"
+        <select
           name="tipo_registro"
           value={formulario.tipo_registro}
           onChange={handleChange}
+          className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           required
-          options={[
-            { value: 'Entrada', label: 'Entrada' },
-            { value: 'Salida', label: 'Salida' },
-          ]}
-        />
+        >
+          <option value="" disabled>
+            Seleccione Tipo de Registro
+          </option>
+          <option value="Entrada">Entrada</option>
+          <option value="Salida">Salida</option>
+        </select>
 
         <button
           type="submit"
-          className="w-full bg-green-700 text-white py-4 rounded-xl font-semibold text-lg hover:bg-green-600 active:bg-green-800 transition"
+          className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
         >
           Registrar Asistencia
         </button>
