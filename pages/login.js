@@ -1,54 +1,59 @@
-import { useState } from 'react'
+'use client';
+
+import React, { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
-  const [nombre, setNombre] = useState('')
+  const [usuario, setUsuario] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const router = useRouter();
 
-  const handleLogin = (e) => {
-    e.preventDefault()
-    if (!nombre.trim()) return alert('Por favor ingrese su nombre')
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  // resto del código
+};
 
-    // Guardar en localStorage
-    localStorage.setItem('usuario', JSON.stringify({ nombre }))
-
-    // Redirigir al formulario
-    window.location.href = '/registro'
-  }
+    if (usuario === 'admin' && contrasena === '1234') {
+      localStorage.setItem('sesionIniciada', 'true');
+      router.push('/registro');
+    } else {
+      alert('Usuario o contraseña incorrectos');
+    }
+  };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#f1f5f9'
-    }}>
-      <form onSubmit={handleLogin} style={{
-        background: 'white',
-        padding: 30,
-        borderRadius: 12,
-        boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-        textAlign: 'center'
-      }}>
-        <h2>Ingreso Coordinador</h2>
+    <div className="min-h-screen flex items-center justify-center bg-green-900">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-10 rounded-2xl shadow-lg w-full max-w-sm text-center space-y-6"
+      >
+        <h2 className="text-3xl font-bold text-green-900">Iniciar Sesión</h2>
+
         <input
           type="text"
-          placeholder="Nombre del Coordinador"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          style={{ width: '100%', padding: 10, margin: '15px 0' }}
+          placeholder="Usuario"
+          value={usuario}
+          onChange={(e) => setUsuario(e.target.value)}
+          className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           required
         />
-        <button style={{
-          backgroundColor: '#22c55e',
-          color: 'white',
-          padding: 10,
-          border: 'none',
-          borderRadius: 6,
-          width: '100%'
-        }}>
-          Ingresar
+
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={contrasena}
+          onChange={(e) => setContrasena(e.target.value)}
+          className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          required
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+        >
+          Iniciar sesión
         </button>
       </form>
     </div>
-  )
+  );
 }
