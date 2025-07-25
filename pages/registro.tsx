@@ -73,98 +73,102 @@ export default function Registro() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-green-900 p-6">
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-2xl shadow-lg p-8 max-w-xl w-full space-y-6 text-center"
+        className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full p-8"
       >
-        <h2 className="text-3xl font-bold text-green-900">Registro de Asistencia</h2>
+        <h2 className="text-4xl font-extrabold text-green-900 mb-8 text-center">
+          Registro de Asistencia
+        </h2>
 
-        <select
-          name="proyecto"
-          value={formulario.proyecto}
-          onChange={handleChange}
-          className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          required
-        >
-          <option value="" disabled>
-            Seleccione Proyecto
-          </option>
-          {proyectos.map((p) => (
-            <option key={p.id} value={p.nombre}>
-              {p.nombre}
-            </option>
-          ))}
-        </select>
-
-        <select
-          name="coordinador"
-          value={formulario.coordinador}
-          onChange={handleChange}
-          className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          required
-        >
-          <option value="" disabled>
-            Seleccione Coordinador
-          </option>
-          {coordinadores.map((c) => (
-            <option key={c.id} value={c.nombre}>
-              {c.nombre}
-            </option>
-          ))}
-        </select>
-
-        <select
-          name="sst"
-          value={formulario.sst}
-          onChange={handleChange}
-          className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          required
-        >
-          <option value="" disabled>
-            Seleccione SST
-          </option>
-          {ssts.map((s) => (
-            <option key={s.id} value={s.nombre}>
-              {s.nombre}
-            </option>
-          ))}
-        </select>
-
-        {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <select
-            key={i}
-            name={`operario${i}`}
-            value={formulario[`operario${i}` as keyof typeof formulario]}
+            name="proyecto"
+            value={formulario.proyecto}
             onChange={handleChange}
-            className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full p-4 border border-green-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-400"
+            required
           >
-            <option value="">{`Seleccione Operario ${i}`}</option>
-            {operarios.map((o) => (
-              <option key={o.id} value={o.nombre}>
-                {o.nombre}
+            <option value="" disabled>
+              Seleccione Proyecto
+            </option>
+            {proyectos.map((p) => (
+              <option key={p.id} value={p.nombre}>
+                {p.nombre}
               </option>
             ))}
           </select>
-        ))}
 
-        <select
-          name="tipo_registro"
-          value={formulario.tipo_registro}
-          onChange={handleChange}
-          className="w-full p-3 border border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          required
-        >
-          <option value="" disabled>
-            Seleccione Tipo de Registro
-          </option>
-          <option value="Entrada">Entrada</option>
-          <option value="Salida">Salida</option>
-        </select>
+          <select
+            name="coordinador"
+            value={formulario.coordinador}
+            onChange={handleChange}
+            className="w-full p-4 border border-green-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-400"
+            required
+          >
+            <option value="" disabled>
+              Seleccione Coordinador
+            </option>
+            {coordinadores.map((c) => (
+              <option key={c.id} value={c.nombre}>
+                {c.nombre}
+              </option>
+            ))}
+          </select>
+
+          <select
+            name="sst"
+            value={formulario.sst}
+            onChange={handleChange}
+            className="w-full p-4 border border-green-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-400"
+            required
+          >
+            <option value="" disabled>
+              Seleccione SST
+            </option>
+            {ssts.map((s) => (
+              <option key={s.id} value={s.nombre}>
+                {s.nombre}
+              </option>
+            ))}
+          </select>
+
+          <select
+            name="tipo_registro"
+            value={formulario.tipo_registro}
+            onChange={handleChange}
+            className="w-full p-4 border border-green-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-400"
+            required
+          >
+            <option value="" disabled>
+              Seleccione Tipo de Registro
+            </option>
+            <option value="Entrada">Entrada</option>
+            <option value="Salida">Salida</option>
+          </select>
+
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <select
+              key={i}
+              name={`operario${i}`}
+              value={formulario[`operario${i}` as keyof typeof formulario]}
+              onChange={handleChange}
+              className="w-full p-4 border border-green-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-400"
+            >
+              <option value="">{`Seleccione Operario ${i}`}</option>
+              {operarios.map((o) => (
+                <option key={o.id} value={o.nombre}>
+                  {o.nombre}
+                </option>
+              ))}
+            </select>
+          ))}
+        </div>
 
         <button
           type="submit"
-          className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+          className="mt-8 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl transition"
         >
           Registrar Asistencia
         </button>
@@ -172,4 +176,5 @@ export default function Registro() {
     </div>
   );
 }
+
 
