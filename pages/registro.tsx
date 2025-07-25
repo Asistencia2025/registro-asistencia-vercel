@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
@@ -40,7 +42,7 @@ export default function Registro() {
     setFormulario({ ...formulario, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const nuevaAsistencia = {
@@ -71,10 +73,10 @@ export default function Registro() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-900">
+    <div className="min-h-screen flex items-center justify-center bg-green-900 p-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-lg w-full max-w-xl text-center space-y-6"
+        className="bg-white rounded-2xl shadow-lg p-8 max-w-xl w-full space-y-6 text-center"
       >
         <h2 className="text-3xl font-bold text-green-900">Registro de Asistencia</h2>
 
@@ -170,3 +172,4 @@ export default function Registro() {
     </div>
   );
 }
+
