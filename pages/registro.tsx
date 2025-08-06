@@ -1,5 +1,5 @@
 import React, { useState, FormEvent } from "react";
-import "@/styles/globals.css"; // ajuste la ruta si es necesario
+import "@/styles/globals.css"; // Ajuste esta ruta si es necesario
 
 const Registro = () => {
   const [proyecto, setProyecto] = useState("");
@@ -16,16 +16,25 @@ const Registro = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const fecha = new Date().toLocaleString("sv-SE", {
+      timeZone: "America/Bogota",
+    });
+
     const registro = {
       proyecto,
       coordinador,
       sst,
       operarios,
       tipoRegistro,
-      fecha: new Date().toISOString(),
+      fecha,
     };
+
     console.log("Registro enviado:", registro);
+
     // Aquí iría la lógica para guardar en Supabase
+    // Ejemplo:
+    // const { data, error } = await supabase.from("registros_asistencia").insert([registro]);
   };
 
   return (
@@ -72,7 +81,7 @@ const Registro = () => {
           />
         ))}
 
-        <button type="submit">Registrar</button>
+        <button type="submit">Registrar Asistencia</button>
       </form>
     </div>
   );
