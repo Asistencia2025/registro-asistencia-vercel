@@ -1,4 +1,3 @@
-// pages/registro/tipo.tsx
 export default function Tipo() {
   return (
     <div
@@ -7,7 +6,7 @@ export default function Tipo() {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        background: "#f5f5f5",
+        background: "#f0f2f5",
       }}
     >
       <div
@@ -15,7 +14,7 @@ export default function Tipo() {
           background: "#fff",
           padding: "30px",
           borderRadius: "12px",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
           width: "350px",
           display: "flex",
           flexDirection: "column",
@@ -23,43 +22,51 @@ export default function Tipo() {
           textAlign: "center",
         }}
       >
-        <h1>Selecciona el tipo de registro</h1>
+        <h2 style={{ marginBottom: "10px", color: "#333" }}>
+          Selecciona el tipo de registro
+        </h2>
+
         <button
           style={{
-            padding: "10px",
+            padding: "12px",
             borderRadius: "6px",
             background: "#007bff",
             color: "#fff",
             border: "none",
             cursor: "pointer",
+            fontSize: "16px",
           }}
-          onClick={() => alert("Ir a Entrada")}
+          onClick={() => (window.location.href = "/registro/entrada")}
         >
           Entrada
         </button>
+
         <button
           style={{
-            padding: "10px",
+            padding: "12px",
             borderRadius: "6px",
             background: "#28a745",
             color: "#fff",
             border: "none",
             cursor: "pointer",
+            fontSize: "16px",
           }}
-          onClick={() => alert("Ir a Salida")}
+          onClick={() => (window.location.href = "/registro/salida")}
         >
           Salida
         </button>
+
         <button
           style={{
-            padding: "10px",
+            padding: "12px",
             borderRadius: "6px",
             background: "#ffc107",
             color: "#000",
             border: "none",
             cursor: "pointer",
+            fontSize: "16px",
           }}
-          onClick={() => alert("Ir a Traslado")}
+          onClick={() => (window.location.href = "/registro/traslado")}
         >
           Traslado
         </button>

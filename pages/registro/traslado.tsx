@@ -1,58 +1,81 @@
-import { useState, FormEvent, useEffect } from "react";
-import { supabase } from "../../lib/supabaseClient";
-
 export default function Traslado() {
-  const [coordinadores, setCoordinadores] = useState<string[]>([]);
-  const [ssts, setSsts] = useState<string[]>([]);
-  const [operarios, setOperarios] = useState<string[]>(["", "", "", ""]);
-
-  const [desde, setDesde] = useState("");
-  const [hasta, setHasta] = useState("");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data: coord } = await supabase.from("coordinadores").select("nombre");
-      setCoordinadores(coord?.map(c => c.nombre) || []);
-      const { data: sstData } = await supabase.from("sst").select("nombre");
-      setSsts(sstData?.map(s => s.nombre) || []);
-      const { data: ops } = await supabase.from("operadores").select("nombre");
-      setOperarios(ops?.map(o => o.nombre) || ["", "", "", ""]);
-    };
-    fetchData();
-  }, []);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const registro = { desde, hasta, coordinadores, ssts, operarios };
-    await supabase.from("traslados").insert([registro]);
-    alert("Traslado registrado ✅");
-  };
-
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Registro de Traslado</h2>
-      <input placeholder="Desde" value={desde} onChange={e => setDesde(e.target.value)} required />
-      <input placeholder="Hasta" value={hasta} onChange={e => setHasta(e.target.value)} required />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        background: "#f0f2f5",
+      }}
+    >
+      <form
+        style={{
+          background: "#fff",
+          padding: "30px",
+          borderRadius: "12px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          width: "350px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "15px",
+        }}
+      >
+        <h2 style={{ textAlign: "center", color: "#333" }}>
+          Registro de Traslado
+        </h2>
 
-      <select>
-        <option value="">Coordinador</option>
-        {coordinadores.map((c, i) => <option key={i}>{c}</option>)}
-      </select>
+        <input
+          type="text"
+          placeholder="Proyecto Origen"
+          style={{
+            padding: "12px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+        <input
+          type="text"
+          placeholder="Proyecto Destino"
+          style={{
+            padding: "12px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+        <input
+          type="text"
+          placeholder="Operario"
+          style={{
+            padding: "12px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+        <input
+          type="time"
+          style={{
+            padding: "12px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
 
-      <select>
-        <option value="">SST</option>
-        {ssts.map((s, i) => <option key={i}>{s}</option>)}
-      </select>
-
-      {[0,1,2,3].map(i => (
-        <select key={i}>
-          <option value="">Operario {i+1}</option>
-          {operarios.map((o, j) => <option key={j}>{o}</option>)}
-        </select>
-      ))}
-
-      <button type="submit">Registrar Traslado</button>
-    </form>
+        <button
+          type="submit"
+          style={{
+            padding: "12px",
+            borderRadius: "6px",
+            background: "#ffc107",
+            color: "#000",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "16px",
+          }}
+        >
+          Registrar Traslado
+        </button>
+      </form>
+    </div>
   );
 }
-
