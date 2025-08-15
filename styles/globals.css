@@ -14,7 +14,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Ocupa toda la pantalla */
+  height: 100vh; /
 }
 
 .login-box {
