@@ -1,38 +1,51 @@
-import React, { useState, FormEvent } from "react";
-import "@/styles/globals.css"; // asegúrese de que esté bien la ruta
+import { useState } from "react";
+import { useRouter } from "next/router";
+import { supabase } from "../lib/supabaseClient";
 
-const Login = () => {
-  const [usuario, setUsuario] = useState("");
-  const [clave, setClave] = useState("");
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Usuario:", usuario, "Contraseña:", clave);
-    // Lógica de autenticación aquí
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert("❌ Error de inicio de sesión: " + error.message);
+    } else {
+      // Redirige automáticamente a la página de registro
+      router.push("/registro");
+    }
   };
 
   return (
     <div className="container">
-      <form onSubmit={handleSubmit} className="form-box">
+      <form onSubmit={handleLogin} className="form-box">
         <h2>Iniciar Sesión</h2>
         <input
-          type="text"
-          placeholder="Usuario"
-          value={usuario}
-          onChange={(e) => setUsuario(e.target.value)}
+          type="email"
+          placeholder="Correo"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <input
           type="password"
           placeholder="Contraseña"
-          value={clave}
-          onChange={(e) => setClave(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
         />
         <button type="submit">Ingresar</button>
       </form>
     </div>
   );
-};
+}
 
-export default Login;
 
 
