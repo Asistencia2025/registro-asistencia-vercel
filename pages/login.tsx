@@ -8,8 +8,7 @@ export default function Login() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    router.push("/registro/tipo"); // <-- Redirige a la página de selección de tipo
+    router.push("/registro/tipo"); // Redirige a la página tipo
   };
 
   return (
