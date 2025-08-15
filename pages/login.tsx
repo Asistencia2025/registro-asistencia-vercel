@@ -1,29 +1,18 @@
 import React from "react";
-import "./globals.css"; // Asegúrate que aquí esté tu CSS
+import "./globals.css"; // tu CSS global si lo usas
 
 export default function Login() {
   return (
     <div className="login-container">
-      <h1>Ingreso autorizado</h1>
-      <form>
-        <label htmlFor="email">Correo electrónico</label>
-        <input
-          type="email"
-          id="email"
-          placeholder="Ingresa tu correo"
-          required
-        />
-
-        <label htmlFor="password">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          placeholder="Ingresa tu contraseña"
-          required
-        />
-
-        <button type="submit">Iniciar sesión</button>
-      </form>
+      <div className="login-box">
+        <h2>Ingreso autorizado</h2>
+        <form>
+          <input type="email" placeholder="Correo electrónico" required />
+          <input type="password" placeholder="Contraseña" required />
+          <button type="submit">Iniciar sesión</button>
+        </form>
+      </div>
     </div>
   );
 }
+

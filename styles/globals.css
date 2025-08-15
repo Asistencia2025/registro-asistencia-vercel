@@ -2,68 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+/* Reset básico */
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
   font-family: Arial, sans-serif;
-  background: url('https://images.unsplash.com/photo-1522202222206-d0d4ecbfdda0') no-repeat center center fixed;
-  background-size: cover;
+}
+
+/* Contenedor principal del login */
+.login-container {
+  height: 100vh;
+  background-color: #006837; /* Verde de fondo */
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
-.login-container {
-  background: rgba(27, 77, 62, 0.8);
-  backdrop-filter: blur(8px);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  width: 350px;
+/* Caja blanca del formulario */
+.login-box {
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  width: 300px;
   text-align: center;
 }
 
-.login-container h1 {
-  color: #fff;
+.login-box h2 {
   margin-bottom: 20px;
+  color: #006837;
 }
 
-.login-container label {
-  display: block;
-  text-align: left;
-  color: #e0e0e0;
-  margin-bottom: 5px;
-  font-size: 14px;
-}
-
-.login-container input {
+.login-box input {
   width: 100%;
   padding: 10px;
   margin-bottom: 15px;
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 5px;
-  outline: none;
-  font-size: 14px;
 }
 
-.login-container button {
-  background: linear-gradient(45deg, #4caf50, #2e8b57);
+.login-box button {
+  background-color: #006837;
   color: white;
+  padding: 10px;
   border: none;
-  padding: 12px;
-  width: 100%;
   border-radius: 5px;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 15px;
-  transition: transform 0.2s ease, background 0.3s ease;
+  width: 100%;
 }
 
-.login-container button:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(45deg, #45a049, #256d47);
-}
-
-.login-container button:active {
-  transform: translateY(1px);
+.login-box button:hover {
+  background-color: #004d28;
 }
