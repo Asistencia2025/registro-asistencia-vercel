@@ -1,100 +1,93 @@
+// pages/login.tsx
 import { useState, FormEvent } from "react";
-import { useRouter } from "next/router";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function Login() {
-  const [usuario, setUsuario] = useState("");
-  const [clave, setClave] = useState("");
-  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    router.push("/registro/tipo");
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert("Error al iniciar sesión: " + error.message);
+    } else {
+      alert("Inicio de sesión exitoso");
+      window.location.href = "/"; // Redirigir a página principal
+    }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        background: "#f0f2f5",
-      }}
-    >
+    <div style={{
+      background: "#1b4332",
+      minHeight: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center"
+    }}>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleLogin}
         style={{
           background: "#fff",
           padding: "30px",
           borderRadius: "12px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
           width: "350px",
           display: "flex",
           flexDirection: "column",
-          gap: "15px",
+          gap: "15px"
         }}
       >
-        <h2
-          style={{
-            textAlign: "center",
-            marginBottom: "10px",
-            color: "#333",
-          }}
-        >
-          Registro de Asistencia
-        </h2>
+        <h2 style={{ textAlign: "center", color: "#1b4332" }}>Iniciar Sesión</h2>
 
-        <label style={{ fontSize: "14px", fontWeight: "bold", color: "#555" }}>
-          Usuario
-        </label>
         <input
-          type="text"
-          placeholder="Ingrese su usuario"
-          value={usuario}
-          onChange={(e) => setUsuario(e.target.value)}
+          type="email"
+          placeholder="Correo electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
           style={{
-            padding: "12px",
+            padding: "10px",
             borderRadius: "6px",
-            border: "1px solid #ccc",
-            outline: "none",
-            fontSize: "14px",
+            border: "1px solid #ccc"
           }}
         />
 
-        <label style={{ fontSize: "14px", fontWeight: "bold", color: "#555" }}>
-          Contraseña
-        </label>
         <input
           type="password"
-          placeholder="Ingrese su contraseña"
-          value={clave}
-          onChange={(e) => setClave(e.target.value)}
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
           style={{
-            padding: "12px",
+            padding: "10px",
             borderRadius: "6px",
-            border: "1px solid #ccc",
-            outline: "none",
-            fontSize: "14px",
+            border: "1px solid #ccc"
           }}
         />
 
         <button
           type="submit"
           style={{
-            padding: "12px",
+            padding: "10px",
             borderRadius: "6px",
-            background: "#28a745",
+            background: "#2d6a4f",
             color: "#fff",
             border: "none",
             cursor: "pointer",
-            fontSize: "16px",
-            fontWeight: "bold",
-            marginTop: "10px",
+            fontWeight: "bold"
           }}
         >
-          Ingresar
+          Entrar
         </button>
       </form>
     </div>

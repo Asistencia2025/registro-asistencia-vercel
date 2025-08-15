@@ -1,76 +1,130 @@
-export default function Traslado() {
+// pages/registro/traslado.tsx
+import { useState, useEffect, FormEvent } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+export default function RegistroTraslado() {
+  const [proyectos, setProyectos] = useState<any[]>([]);
+  const [coordinadores, setCoordinadores] = useState<any[]>([]);
+  const [ssts, setSsts] = useState<any[]>([]);
+  const [operadores, setOperadores] = useState<any[]>([]);
+
+  const [proyectoOrigen, setProyectoOrigen] = useState("");
+  const [proyectoDestino, setProyectoDestino] = useState("");
+  const [coordinador, setCoordinador] = useState("");
+  const [sst, setSst] = useState("");
+  const [operador, setOperador] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data: proyectosData } = await supabase.from("proyectos").select("*");
+      const { data: coordData } = await supabase.from("coordinadores").select("*");
+      const { data: sstData } = await supabase.from("ssts").select("*");
+      const { data: opData } = await supabase.from("operadores").select("*");
+
+      if (proyectosData) setProyectos(proyectosData);
+      if (coordData) setCoordinadores(coordData);
+      if (sstData) setSsts(sstData);
+      if (opData) setOperadores(opData);
+    };
+
+    fetchData();
+  }, []);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const fechaHora = new Date().toISOString();
+
+    const { error } = await supabase.from("traslados").insert([
+      {
+        proyecto_origen: proyectoOrigen,
+        proyecto_destino: proyectoDestino,
+        coordinador_id: coordinador,
+        sst_id: sst,
+        operador_id: operador,
+        fecha_hora: fechaHora
+      }
+    ]);
+
+    if (error) {
+      alert("Error al registrar traslado: " + error.message);
+    } else {
+      alert("Traslado registrado correctamente");
+      setProyectoOrigen("");
+      setProyectoDestino("");
+      setCoordinador("");
+      setSst("");
+      setOperador("");
+    }
+  };
+
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        background: "#f0f2f5",
-      }}
-    >
+    <div style={{ background: "#1b4332", minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
       <form
+        onSubmit={handleSubmit}
         style={{
           background: "#fff",
           padding: "30px",
           borderRadius: "12px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
           width: "350px",
           display: "flex",
           flexDirection: "column",
-          gap: "15px",
+          gap: "15px"
         }}
       >
-        <h2 style={{ textAlign: "center", color: "#333" }}>
-          Registro de Traslado
-        </h2>
+        <h2 style={{ textAlign: "center" }}>Registro de Traslado</h2>
 
-        <input
-          type="text"
-          placeholder="Proyecto Origen"
-          style={{
-            padding: "12px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Proyecto Destino"
-          style={{
-            padding: "12px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Operario"
-          style={{
-            padding: "12px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <input
-          type="time"
-          style={{
-            padding: "12px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-          }}
-        />
+        <select value={proyectoOrigen} onChange={e => setProyectoOrigen(e.target.value)} required>
+          <option value="">Proyecto Origen</option>
+          {proyectos.map(p => (
+            <option key={p.id} value={p.id}>{p.nombre}</option>
+          ))}
+        </select>
+
+        <select value={proyectoDestino} onChange={e => setProyectoDestino(e.target.value)} required>
+          <option value="">Proyecto Destino</option>
+          {proyectos.map(p => (
+            <option key={p.id} value={p.id}>{p.nombre}</option>
+          ))}
+        </select>
+
+        <select value={coordinador} onChange={e => setCoordinador(e.target.value)} required>
+          <option value="">Coordinador</option>
+          {coordinadores.map(c => (
+            <option key={c.id} value={c.id}>{c.nombre}</option>
+          ))}
+        </select>
+
+        <select value={sst} onChange={e => setSst(e.target.value)} required>
+          <option value="">SST</option>
+          {ssts.map(s => (
+            <option key={s.id} value={s.id}>{s.nombre}</option>
+          ))}
+        </select>
+
+        <select value={operador} onChange={e => setOperador(e.target.value)} required>
+          <option value="">Operario</option>
+          {operadores.map(o => (
+            <option key={o.id} value={o.id}>{o.nombre}</option>
+          ))}
+        </select>
 
         <button
           type="submit"
           style={{
-            padding: "12px",
+            padding: "10px",
             borderRadius: "6px",
-            background: "#ffc107",
-            color: "#000",
+            background: "#2d6a4f",
+            color: "#fff",
             border: "none",
             cursor: "pointer",
-            fontSize: "16px",
+            fontWeight: "bold"
           }}
         >
           Registrar Traslado
@@ -79,3 +133,4 @@ export default function Traslado() {
     </div>
   );
 }
+
