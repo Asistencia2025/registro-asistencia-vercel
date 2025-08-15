@@ -1,64 +1,86 @@
-.container {
+/* Centrado total del body */
+body {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f1f3f4;
+  margin: 0;
+  background-color: #f0f3f6; /* Gris claro de fondo */
+  font-family: 'Roboto', Arial, sans-serif;
 }
 
-.box {
+/* Contenedor principal del login */
+.login-container {
   background: white;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-  width: 350px;
-  text-align: center;
+  padding: 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 380px;
+  text-align: left;
 }
 
-.logo {
-  width: 50px;
-  margin-bottom: 10px;
+/* Logo de Google (opcional) */
+.login-logo {
+  display: block;
+  width: 75px;
+  margin-bottom: 1rem;
 }
 
-h2 {
-  font-size: 24px;
-  margin-bottom: 5px;
+/* Título */
+.login-title {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
 }
 
-p {
-  font-size: 14px;
+/* Subtítulo */
+.login-subtitle {
   color: #5f6368;
-  margin-bottom: 20px;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-input {
-  padding: 10px;
-  margin-bottom: 15px;
+/* Inputs */
+.login-input {
+  width: 100%;
+  padding: 0.9rem;
+  margin-bottom: 1rem;
   border: 1px solid #dadce0;
   border-radius: 4px;
-  font-size: 14px;
-}
-
-input:focus {
+  font-size: 1rem;
   outline: none;
-  border-color: #1a73e8;
 }
 
-button {
+.login-input:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 1px #1a73e8;
+}
+
+/* Botón principal */
+.login-button {
+  width: 100%;
+  padding: 0.8rem;
   background-color: #1a73e8;
   color: white;
-  padding: 10px;
   border: none;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 1rem;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #1765c1;
+.login-button:hover {
+  background-color: #1558b0;
+}
+
+/* Enlaces */
+.login-link {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  text-decoration: underline;
 }
