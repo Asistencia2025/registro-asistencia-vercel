@@ -8,7 +8,7 @@ export default function Login() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // Aquí puede agregar autenticación real si quiere
+
     router.push("/registro/tipo"); // <-- Redirige a la página de selección de tipo
   };
 
