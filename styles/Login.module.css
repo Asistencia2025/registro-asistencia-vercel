@@ -1,14 +1,15 @@
-/* Contenedor principal centrado */
-.login-container {
+/* Fondo general */
+.loginContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #0d3b2e; /* Verde oscuro de fondo */
+  background-color: #0d3b2e; /* Verde oscuro */
+  font-family: 'Roboto', Arial, sans-serif;
 }
 
 /* Caja del formulario */
-.login-box {
+.loginBox {
   background: white;
   padding: 2.5rem;
   border-radius: 12px;
@@ -18,14 +19,13 @@
 }
 
 /* Título */
-.login-box h2 {
+.loginTitle {
   margin-bottom: 1.5rem;
   color: #0d3b2e;
-  font-family: 'Roboto', Arial, sans-serif;
 }
 
 /* Labels */
-.login-box label {
+.loginLabel {
   display: block;
   text-align: left;
   margin-bottom: 0.5rem;
@@ -34,7 +34,7 @@
 }
 
 /* Inputs */
-.login-box input {
+.loginInput {
   width: 100%;
   padding: 0.8rem;
   margin-bottom: 1.2rem;
@@ -44,7 +44,7 @@
 }
 
 /* Botón */
-.login-box button {
+.loginButton {
   width: 100%;
   padding: 0.9rem;
   border: none;
@@ -56,6 +56,6 @@
   transition: background 0.3s ease;
 }
 
-.login-box button:hover {
+.loginButton:hover {
   background-color: #125c43;
 }

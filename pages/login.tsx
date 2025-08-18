@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from "../styles/Login.module.css"; // Importar el CSS module
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -10,24 +11,31 @@ export default function Login() {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-box" onSubmit={handleSubmit}>
-        <h2>Ingreso autorizado</h2>
-        <label>Correo electrónico</label>
+    <div className={styles.loginContainer}>
+      <form className={styles.loginBox} onSubmit={handleSubmit}>
+        <h2 className={styles.loginTitle}>Ingreso autorizado</h2>
+
+        <label className={styles.loginLabel}>Correo electrónico</label>
         <input
           type="email"
+          className={styles.loginInput}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <label>Contraseña</label>
+
+        <label className={styles.loginLabel}>Contraseña</label>
         <input
           type="password"
+          className={styles.loginInput}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Iniciar sesión</button>
+
+        <button type="submit" className={styles.loginButton}>
+          Iniciar sesión
+        </button>
       </form>
     </div>
   );
