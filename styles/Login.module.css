@@ -1,86 +1,61 @@
-/* Centrado total del body */
-body {
+/* Contenedor principal centrado */
+.login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  margin: 0;
-  background-color: #f0f3f6; /* Gris claro de fondo */
-  font-family: 'Roboto', Arial, sans-serif;
+  background-color: #0d3b2e; /* Verde oscuro de fondo */
 }
 
-/* Contenedor principal del login */
-.login-container {
+/* Caja del formulario */
+.login-box {
   background: white;
   padding: 2.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  width: 380px;
-  text-align: left;
-}
-
-/* Logo de Google (opcional) */
-.login-logo {
-  display: block;
-  width: 75px;
-  margin-bottom: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+  width: 350px;
+  text-align: center;
 }
 
 /* Título */
-.login-title {
-  font-size: 1.5rem;
-  font-weight: 400;
-  margin-bottom: 0.5rem;
+.login-box h2 {
+  margin-bottom: 1.5rem;
+  color: #0d3b2e;
+  font-family: 'Roboto', Arial, sans-serif;
 }
 
-/* Subtítulo */
-.login-subtitle {
-  color: #5f6368;
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
+/* Labels */
+.login-box label {
+  display: block;
+  text-align: left;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #333;
 }
 
 /* Inputs */
-.login-input {
-  width: 100%;
-  padding: 0.9rem;
-  margin-bottom: 1rem;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  font-size: 1rem;
-  outline: none;
-}
-
-.login-input:focus {
-  border-color: #1a73e8;
-  box-shadow: 0 0 0 1px #1a73e8;
-}
-
-/* Botón principal */
-.login-button {
+.login-box input {
   width: 100%;
   padding: 0.8rem;
-  background-color: #1a73e8;
-  color: white;
+  margin-bottom: 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+/* Botón */
+.login-box button {
+  width: 100%;
+  padding: 0.9rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
+  background-color: #0d3b2e;
+  color: white;
   font-size: 1rem;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-.login-button:hover {
-  background-color: #1558b0;
-}
-
-/* Enlaces */
-.login-link {
-  display: block;
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: #1a73e8;
-  text-decoration: none;
-}
-
-.login-link:hover {
-  text-decoration: underline;
+.login-box button:hover {
+  background-color: #125c43;
 }
