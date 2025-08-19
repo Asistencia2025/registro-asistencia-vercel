@@ -1,13 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useState, useEffect, FormEvent } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-// Validar que existan las variables de entorno
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import supabase from '../../lib/supabaseClient'; // <-- cliente central
 
 export default function RegistroTraslado() {
   const [coordinadores, setCoordinadores] = useState<any[]>([]);
