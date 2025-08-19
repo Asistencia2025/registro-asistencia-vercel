@@ -50,13 +50,25 @@ export default function RegistroTraslado() {
       return;
     }
 
+    const operadoresNombres = operadoresSeleccionados
+      .map(id => operarios.find(o => o.id === id)?.nombre)
+      .filter(Boolean) as string[];
+
+    const coordinadorNombre = coordinadores.find(c => c.id === coordinador)?.nombre;
+    const sstNombre = ssts.find(s => s.id === sst)?.nombre;
+
+    if (!coordinadorNombre || !sstNombre) {
+      alert("Selecciona un coordinador y SST válidos");
+      return;
+    }
+
     const { error } = await supabase.from("traslados").insert([
       {
         proyecto_desde: desde,
         proyecto_hasta: hasta,
-        coordinador: coordinadores.find(c => c.id === coordinador)?.nombre,
-        sst: ssts.find(s => s.id === sst)?.nombre,
-        operadores: operadoresSeleccionados.map(id => operarios.find(o => o.id === id)?.nombre),
+        coordinador: coordinadorNombre,
+        sst: sstNombre,
+        operadores: operadoresNombres,
         fecha_hora: new Date().toISOString()
       }
     ]);
@@ -70,7 +82,6 @@ export default function RegistroTraslado() {
       setCoordinador("");
       setSst("");
       setOperadoresSeleccionados([]);
-      // Mostrar mensaje de éxito
       setMensajeExito("¡Traslado registrado correctamente! Muchas gracias.");
     }
   };
@@ -92,7 +103,6 @@ export default function RegistroTraslado() {
       >
         <h2 style={{ textAlign: "center" }}>Registro de Traslado</h2>
 
-        {/* Inputs de texto para Desde y Hasta */}
         <input
           type="text"
           placeholder="Desde"
@@ -124,7 +134,7 @@ export default function RegistroTraslado() {
 
         <label>Operarios (mín 1, máximo 6)</label>
         <div style={{ display: "flex", flexDirection: "column", gap: "5px", maxHeight: "150px", overflowY: "auto" }}>
-          {operarios.map((op) => (
+          {operarios.map(op => (
             <label key={op.id} style={{ fontSize: "12px" }}>
               <input
                 type="checkbox"
@@ -151,7 +161,6 @@ export default function RegistroTraslado() {
           Registrar Traslado
         </button>
 
-        {/* Mensaje de éxito */}
         {mensajeExito && <p style={{ color: "#2d6a4f", textAlign: "center", marginTop: "10px" }}>{mensajeExito}</p>}
       </form>
     </div>

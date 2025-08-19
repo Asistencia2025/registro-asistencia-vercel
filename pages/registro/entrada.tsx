@@ -49,12 +49,24 @@ export default function RegistroEntrada() {
       return;
     }
 
+    const operadoresNombres = operadoresSeleccionados
+      .map(id => operarios.find(o => o.id === id)?.nombre)
+      .filter(Boolean) as string[];
+
+    const coordinadorNombre = coordinadores.find(c => c.id === coordinador)?.nombre;
+    const sstNombre = ssts.find(s => s.id === sst)?.nombre;
+
+    if (!coordinadorNombre || !sstNombre) {
+      alert("Selecciona un coordinador y SST válidos");
+      return;
+    }
+
     const { error } = await supabase.from("ingresos_nombres").insert([
       {
-        proyecto: proyecto,
-        coordinador: coordinadores.find(c => c.id === coordinador)?.nombre,
-        sst: ssts.find(s => s.id === sst)?.nombre,
-        operadores: operadoresSeleccionados.map(id => operarios.find(o => o.id === id)?.nombre),
+        proyecto,
+        coordinador: coordinadorNombre,
+        sst: sstNombre,
+        operadores: operadoresNombres,
         fecha_hora: new Date().toISOString()
       }
     ]);
@@ -62,12 +74,10 @@ export default function RegistroEntrada() {
     if (error) {
       alert("Error al registrar entrada: " + error.message);
     } else {
-      // Limpiar formulario
       setProyecto("");
       setCoordinador("");
       setSst("");
       setOperadoresSeleccionados([]);
-      // Mostrar mensaje de éxito
       setMensajeExito("¡Te has registrado correctamente! Muchas gracias.");
     }
   };
@@ -89,7 +99,6 @@ export default function RegistroEntrada() {
       >
         <h2 style={{ textAlign: "center" }}>Registro de Entrada</h2>
 
-        {/* Proyecto como input de texto */}
         <input
           type="text"
           placeholder="Proyecto"
@@ -114,14 +123,14 @@ export default function RegistroEntrada() {
 
         <label>Operarios (mín 1, máximo 6)</label>
         <div style={{ display: "flex", flexDirection: "column", gap: "5px", maxHeight: "150px", overflowY: "auto" }}>
-          {operarios.map((op) => (
+          {operarios.map(op => (
             <label key={op.id} style={{ fontSize: "12px" }}>
               <input
                 type="checkbox"
                 checked={operadoresSeleccionados.includes(op.id)}
                 onChange={() => handleCheckboxChange(op.id)}
-              />
-              {" "}{op.nombre}
+              />{" "}
+              {op.nombre}
             </label>
           ))}
         </div>
@@ -141,7 +150,6 @@ export default function RegistroEntrada() {
           Registrar Entrada
         </button>
 
-        {/* Mensaje de éxito */}
         {mensajeExito && <p style={{ color: "#2d6a4f", textAlign: "center", marginTop: "10px" }}>{mensajeExito}</p>}
       </form>
     </div>

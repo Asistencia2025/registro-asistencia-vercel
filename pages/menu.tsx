@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Menu() {
   return (
     <div
@@ -22,49 +24,44 @@ export default function Menu() {
         <h2 style={{ marginBottom: "20px", color: "#2d6a4f" }}>Menú Principal</h2>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-          <a
-            href="/registro/entrada"
-            style={{
+          <Link href="/registro/entrada" style={{
               padding: "12px",
               borderRadius: "6px",
               background: "#2d6a4f",
               color: "#fff",
               textDecoration: "none",
               fontWeight: "bold",
-            }}
-          >
+              textAlign: "center"
+            }}>
             Registrar Entrada
-          </a>
+          </Link>
 
-          <a
-            href="/registro/salida"
-            style={{
+          <Link href="/registro/salida" style={{
               padding: "12px",
               borderRadius: "6px",
               background: "#40916c",
               color: "#fff",
               textDecoration: "none",
               fontWeight: "bold",
-            }}
-          >
+              textAlign: "center"
+            }}>
             Registrar Salida
-          </a>
+          </Link>
 
-          <a
-            href="/registro/traslado"
-            style={{
+          <Link href="/registro/traslado" style={{
               padding: "12px",
               borderRadius: "6px",
               background: "#74c69d",
               color: "#fff",
               textDecoration: "none",
               fontWeight: "bold",
-            }}
-          >
+              textAlign: "center"
+            }}>
             Registrar Traslado
-          </a>
+          </Link>
         </div>
       </div>
     </div>
   );
 }
+

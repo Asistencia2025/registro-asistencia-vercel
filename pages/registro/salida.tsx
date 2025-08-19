@@ -49,7 +49,6 @@ export default function RegistroSalida() {
       return;
     }
 
-    // Obtener nombres válidos y filtrar undefined
     const operadoresNombres = operadoresSeleccionados
       .map(id => operarios.find(o => o.id === id)?.nombre)
       .filter(Boolean) as string[];
@@ -67,7 +66,7 @@ export default function RegistroSalida() {
         proyecto,
         coordinador: coordinadorNombre,
         sst: sstNombre,
-        operadores: operadoresNombres, // se guarda como array de strings o jsonb
+        operadores: operadoresNombres,
         fecha_hora: new Date().toISOString()
       }
     ]);
