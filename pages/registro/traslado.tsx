@@ -1,10 +1,11 @@
 import { useState, useEffect, FormEvent } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+// Validar que existan las variables de entorno
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function RegistroTraslado() {
   const [coordinadores, setCoordinadores] = useState<any[]>([]);
@@ -76,7 +77,6 @@ export default function RegistroTraslado() {
     if (error) {
       alert("Error al registrar traslado: " + error.message);
     } else {
-      // Limpiar formulario
       setDesde("");
       setHasta("");
       setCoordinador("");

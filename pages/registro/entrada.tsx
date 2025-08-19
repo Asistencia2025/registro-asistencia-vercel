@@ -1,15 +1,21 @@
 import { useState, useEffect, FormEvent } from "react";
 import { createClient } from "@supabase/supabase-js";
 
+// Cliente Supabase
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+interface Persona {
+  id: string;
+  nombre: string;
+}
+
 export default function RegistroEntrada() {
-  const [coordinadores, setCoordinadores] = useState<any[]>([]);
-  const [ssts, setSsts] = useState<any[]>([]);
-  const [operarios, setOperarios] = useState<any[]>([]);
+  const [coordinadores, setCoordinadores] = useState<Persona[]>([]);
+  const [ssts, setSsts] = useState<Persona[]>([]);
+  const [operarios, setOperarios] = useState<Persona[]>([]);
 
   const [proyecto, setProyecto] = useState("");
   const [coordinador, setCoordinador] = useState("");
@@ -19,13 +25,21 @@ export default function RegistroEntrada() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: coordData } = await supabase.from("coordinadores").select("*");
-      const { data: sstData } = await supabase.from("ssts").select("*");
-      const { data: opData } = await supabase.from("operarios").select("*");
+      try {
+        const { data: coordData, error: coordError } = await supabase.from("coordinadores").select("*");
+        const { data: sstData, error: sstError } = await supabase.from("ssts").select("*");
+        const { data: opData, error: opError } = await supabase.from("operarios").select("*");
 
-      if (coordData) setCoordinadores(coordData);
-      if (sstData) setSsts(sstData);
-      if (opData) setOperarios(opData);
+        if (coordError) throw coordError;
+        if (sstError) throw sstError;
+        if (opError) throw opError;
+
+        if (coordData) setCoordinadores(coordData);
+        if (sstData) setSsts(sstData);
+        if (opData) setOperarios(opData);
+      } catch (error: any) {
+        console.error("Error fetching data:", error.message);
+      }
     };
 
     fetchData();
@@ -44,6 +58,11 @@ export default function RegistroEntrada() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    if (!coordinador || !sst) {
+      alert("Selecciona un coordinador y un SST");
+      return;
+    }
+
     if (operadoresSeleccionados.length < 1) {
       alert("Selecciona al menos 1 operario");
       return;
@@ -57,7 +76,7 @@ export default function RegistroEntrada() {
     const sstNombre = ssts.find(s => s.id === sst)?.nombre;
 
     if (!coordinadorNombre || !sstNombre) {
-      alert("Selecciona un coordinador y SST válidos");
+      alert("Datos de coordinador o SST inválidos");
       return;
     }
 
@@ -129,8 +148,8 @@ export default function RegistroEntrada() {
                 type="checkbox"
                 checked={operadoresSeleccionados.includes(op.id)}
                 onChange={() => handleCheckboxChange(op.id)}
-              />{" "}
-              {op.nombre}
+              />
+              {" "}{op.nombre}
             </label>
           ))}
         </div>

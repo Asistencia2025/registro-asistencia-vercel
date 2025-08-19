@@ -6,10 +6,15 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+interface Persona {
+  id: string;
+  nombre: string;
+}
+
 export default function RegistroSalida() {
-  const [coordinadores, setCoordinadores] = useState<any[]>([]);
-  const [ssts, setSsts] = useState<any[]>([]);
-  const [operarios, setOperarios] = useState<any[]>([]);
+  const [coordinadores, setCoordinadores] = useState<Persona[]>([]);
+  const [ssts, setSsts] = useState<Persona[]>([]);
+  const [operarios, setOperarios] = useState<Persona[]>([]);
 
   const [proyecto, setProyecto] = useState("");
   const [coordinador, setCoordinador] = useState("");
@@ -19,13 +24,21 @@ export default function RegistroSalida() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: coordData } = await supabase.from("coordinadores").select("*");
-      const { data: sstData } = await supabase.from("ssts").select("*");
-      const { data: opData } = await supabase.from("operarios").select("*");
+      try {
+        const { data: coordData, error: coordError } = await supabase.from("coordinadores").select("*");
+        const { data: sstData, error: sstError } = await supabase.from("ssts").select("*");
+        const { data: opData, error: opError } = await supabase.from("operarios").select("*");
 
-      if (coordData) setCoordinadores(coordData);
-      if (sstData) setSsts(sstData);
-      if (opData) setOperarios(opData);
+        if (coordError) throw coordError;
+        if (sstError) throw sstError;
+        if (opError) throw opError;
+
+        if (coordData) setCoordinadores(coordData);
+        if (sstData) setSsts(sstData);
+        if (opData) setOperarios(opData);
+      } catch (error: any) {
+        console.error("Error fetching data:", error.message);
+      }
     };
 
     fetchData();
@@ -123,7 +136,7 @@ export default function RegistroSalida() {
 
         <label>Operarios (mín 1, máximo 6)</label>
         <div style={{ display: "flex", flexDirection: "column", gap: "5px", maxHeight: "150px", overflowY: "auto" }}>
-          {operarios.map((op) => (
+          {operarios.map(op => (
             <label key={op.id} style={{ fontSize: "12px" }}>
               <input
                 type="checkbox"
