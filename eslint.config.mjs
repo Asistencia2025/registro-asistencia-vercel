@@ -11,11 +11,9 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-
-  // Reglas personalizadas
   {
     rules: {
-      "@typescript-eslint/no-explicit-any": "off", // Desactiva la regla de "any"
+      "@typescript-eslint/no-explicit-any": "off", // desactiva esta regla
     },
   },
 ];
