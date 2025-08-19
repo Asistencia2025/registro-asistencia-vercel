@@ -1,74 +1,109 @@
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/router';
-import { supabase } from '../lib/supabaseClient';
+import { useState, FormEvent } from "react";
+import { createClient } from "@supabase/supabase-js";
 
-export default function LoginPage() {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string>('');
-  const router = useRouter();
+// Conexión con Supabase
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-  async function handleLogin(e: FormEvent<HTMLFormElement>) {
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // Buscar el usuario en la tabla usuarios_login
+    const { data, error } = await supabase
+      .from("usuarios_login")
+      .select("*")
+      .eq("email", email)
+      .eq("password", password) // ⚠️ en producción deberías encriptar, pero así está bien para pruebas
+      .single();
 
-    if (error) {
-      console.error('Error en login:', error);
-      setError(error.message || 'Error desconocido al iniciar sesión');
-    } else {
-      router.push('/registro');
+    if (error || !data) {
+      setErrorMsg("Usuario o contraseña incorrectos");
+      return;
     }
-  }
+
+    // Si pasa la validación, redirigir al menú
+    window.location.href = "/menu"; // 👈 ajusta según tu ruta
+  };
 
   return (
-  <div className="min-h-screen bg-gradient-to-br from-[#05291e] to-[#0b3a26] flex justify-center items-center p-5">
-    <form
-      onSubmit={handleLogin}
-      className="bg-white p-12 rounded-xl shadow-lg w-full max-w-md font-sans"
-      noValidate
+    <div
+      style={{
+        backgroundColor: "#1b4332",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
-      <h2 className="text-center mb-8 font-bold text-[#064e3b] text-2xl">
-        Ingreso autorizado
-      </h2>
-      {error && (
-        <p className="text-red-700 mb-5 text-center font-semibold">
-          {error}
-        </p>
-      )}
-      <label htmlFor="email" className="block mb-2 font-semibold text-[#065f46]">
-        Correo electrónico
-      </label>
-      <input
-        id="email"
-        type="email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full p-3 mb-6 rounded-lg border border-gray-300 text-gray-900 bg-gray-50 focus:outline-none focus:border-green-500"
-      />
-      <label htmlFor="password" className="block mb-2 font-semibold text-[#065f46]">
-        Contraseña
-      </label>
-      <input
-        id="password"
-        type="password"
-        required
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full p-3 mb-6 rounded-lg border border-gray-300 text-gray-900 bg-gray-50 focus:outline-none focus:border-green-500"
-      />
-      <button
-        type="submit"
-        className="w-full py-3 bg-green-500 text-white font-bold text-lg rounded-lg shadow-md hover:bg-green-600 transition-colors"
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          backgroundColor: "#fff",
+          padding: "30px",
+          borderRadius: "12px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+          width: "350px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "15px",
+        }}
       >
-        Iniciar sesión
-      </button>
-    </form>
-  </div>
-);
+        <h2 style={{ textAlign: "center", color: "#2d6a4f" }}>
+          Iniciar Sesión
+        </h2>
+
+        <input
+          type="email"
+          placeholder="Correo electrónico"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+
+        <button
+          type="submit"
+          style={{
+            padding: "10px",
+            borderRadius: "6px",
+            background: "#2d6a4f",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Entrar
+        </button>
+
+        {errorMsg && (
+          <p style={{ color: "red", textAlign: "center" }}>{errorMsg}</p>
+        )}
+      </form>
+    </div>
+  );
 }
