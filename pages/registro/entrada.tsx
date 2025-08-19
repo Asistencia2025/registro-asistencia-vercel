@@ -1,4 +1,3 @@
-// pages/registro/entrada.tsx
 import { useState, useEffect, FormEvent } from "react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -8,56 +7,68 @@ const supabase = createClient(
 );
 
 export default function RegistroEntrada() {
-  const [proyectos, setProyectos] = useState<any[]>([]);
   const [coordinadores, setCoordinadores] = useState<any[]>([]);
   const [ssts, setSsts] = useState<any[]>([]);
-  const [operadores, setOperadores] = useState<any[]>([]);
+  const [operarios, setOperarios] = useState<any[]>([]);
 
   const [proyecto, setProyecto] = useState("");
   const [coordinador, setCoordinador] = useState("");
   const [sst, setSst] = useState("");
-  const [operador, setOperador] = useState("");
+  const [operadoresSeleccionados, setOperadoresSeleccionados] = useState<string[]>([]);
+  const [mensajeExito, setMensajeExito] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: proyectosData } = await supabase.from("proyectos").select("*");
       const { data: coordData } = await supabase.from("coordinadores").select("*");
       const { data: sstData } = await supabase.from("ssts").select("*");
-      const { data: opData } = await supabase.from("operadores").select("*");
+      const { data: opData } = await supabase.from("operarios").select("*");
 
-      if (proyectosData) setProyectos(proyectosData);
       if (coordData) setCoordinadores(coordData);
       if (sstData) setSsts(sstData);
-      if (opData) setOperadores(opData);
+      if (opData) setOperarios(opData);
     };
 
     fetchData();
   }, []);
 
+  const handleCheckboxChange = (id: string) => {
+    if (operadoresSeleccionados.includes(id)) {
+      setOperadoresSeleccionados(operadoresSeleccionados.filter(op => op !== id));
+    } else if (operadoresSeleccionados.length < 6) {
+      setOperadoresSeleccionados([...operadoresSeleccionados, id]);
+    } else {
+      alert("Máximo 6 operarios permitidos");
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const fechaHora = new Date().toISOString();
+    if (operadoresSeleccionados.length < 1) {
+      alert("Selecciona al menos 1 operario");
+      return;
+    }
 
-    const { error } = await supabase.from("ingresos").insert([
+    const { error } = await supabase.from("ingresos_nombres").insert([
       {
-        tipo: "entrada",
-        proyecto_id: proyecto,
-        coordinador_id: coordinador,
-        sst_id: sst,
-        operador_id: operador,
-        fecha_hora: fechaHora
+        proyecto: proyecto,
+        coordinador: coordinadores.find(c => c.id === coordinador)?.nombre,
+        sst: ssts.find(s => s.id === sst)?.nombre,
+        operadores: operadoresSeleccionados.map(id => operarios.find(o => o.id === id)?.nombre),
+        fecha_hora: new Date().toISOString()
       }
     ]);
 
     if (error) {
       alert("Error al registrar entrada: " + error.message);
     } else {
-      alert("Entrada registrada correctamente");
+      // Limpiar formulario
       setProyecto("");
       setCoordinador("");
       setSst("");
-      setOperador("");
+      setOperadoresSeleccionados([]);
+      // Mostrar mensaje de éxito
+      setMensajeExito("¡Te has registrado correctamente! Muchas gracias.");
     }
   };
 
@@ -78,12 +89,14 @@ export default function RegistroEntrada() {
       >
         <h2 style={{ textAlign: "center" }}>Registro de Entrada</h2>
 
-        <select value={proyecto} onChange={e => setProyecto(e.target.value)} required>
-          <option value="">Proyecto</option>
-          {proyectos.map(p => (
-            <option key={p.id} value={p.id}>{p.nombre}</option>
-          ))}
-        </select>
+        {/* Proyecto como input de texto */}
+        <input
+          type="text"
+          placeholder="Proyecto"
+          value={proyecto}
+          onChange={e => setProyecto(e.target.value)}
+          required
+        />
 
         <select value={coordinador} onChange={e => setCoordinador(e.target.value)} required>
           <option value="">Coordinador</option>
@@ -99,12 +112,19 @@ export default function RegistroEntrada() {
           ))}
         </select>
 
-        <select value={operador} onChange={e => setOperador(e.target.value)} required>
-          <option value="">Operario</option>
-          {operadores.map(o => (
-            <option key={o.id} value={o.id}>{o.nombre}</option>
+        <label>Operarios (mín 1, máximo 6)</label>
+        <div style={{ display: "flex", flexDirection: "column", gap: "5px", maxHeight: "150px", overflowY: "auto" }}>
+          {operarios.map((op) => (
+            <label key={op.id} style={{ fontSize: "12px" }}>
+              <input
+                type="checkbox"
+                checked={operadoresSeleccionados.includes(op.id)}
+                onChange={() => handleCheckboxChange(op.id)}
+              />
+              {" "}{op.nombre}
+            </label>
           ))}
-        </select>
+        </div>
 
         <button
           type="submit"
@@ -120,6 +140,9 @@ export default function RegistroEntrada() {
         >
           Registrar Entrada
         </button>
+
+        {/* Mensaje de éxito */}
+        {mensajeExito && <p style={{ color: "#2d6a4f", textAlign: "center", marginTop: "10px" }}>{mensajeExito}</p>}
       </form>
     </div>
   );

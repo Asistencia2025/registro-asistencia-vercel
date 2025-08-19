@@ -1,4 +1,3 @@
-// pages/registro/salida.tsx
 import { useState, useEffect, FormEvent } from "react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -8,56 +7,79 @@ const supabase = createClient(
 );
 
 export default function RegistroSalida() {
-  const [proyectos, setProyectos] = useState<any[]>([]);
   const [coordinadores, setCoordinadores] = useState<any[]>([]);
   const [ssts, setSsts] = useState<any[]>([]);
-  const [operadores, setOperadores] = useState<any[]>([]);
+  const [operarios, setOperarios] = useState<any[]>([]);
 
   const [proyecto, setProyecto] = useState("");
   const [coordinador, setCoordinador] = useState("");
   const [sst, setSst] = useState("");
-  const [operador, setOperador] = useState("");
+  const [operadoresSeleccionados, setOperadoresSeleccionados] = useState<string[]>([]);
+  const [mensajeExito, setMensajeExito] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: proyectosData } = await supabase.from("proyectos").select("*");
       const { data: coordData } = await supabase.from("coordinadores").select("*");
       const { data: sstData } = await supabase.from("ssts").select("*");
-      const { data: opData } = await supabase.from("operadores").select("*");
+      const { data: opData } = await supabase.from("operarios").select("*");
 
-      if (proyectosData) setProyectos(proyectosData);
       if (coordData) setCoordinadores(coordData);
       if (sstData) setSsts(sstData);
-      if (opData) setOperadores(opData);
+      if (opData) setOperarios(opData);
     };
 
     fetchData();
   }, []);
 
+  const handleCheckboxChange = (id: string) => {
+    if (operadoresSeleccionados.includes(id)) {
+      setOperadoresSeleccionados(operadoresSeleccionados.filter(op => op !== id));
+    } else if (operadoresSeleccionados.length < 6) {
+      setOperadoresSeleccionados([...operadoresSeleccionados, id]);
+    } else {
+      alert("Máximo 6 operarios permitidos");
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const fechaHora = new Date().toISOString();
+    if (operadoresSeleccionados.length < 1) {
+      alert("Selecciona al menos 1 operario");
+      return;
+    }
 
-    const { error } = await supabase.from("ingresos").insert([
+    // Obtener nombres válidos y filtrar undefined
+    const operadoresNombres = operadoresSeleccionados
+      .map(id => operarios.find(o => o.id === id)?.nombre)
+      .filter(Boolean) as string[];
+
+    const coordinadorNombre = coordinadores.find(c => c.id === coordinador)?.nombre;
+    const sstNombre = ssts.find(s => s.id === sst)?.nombre;
+
+    if (!coordinadorNombre || !sstNombre) {
+      alert("Selecciona un coordinador y SST válidos");
+      return;
+    }
+
+    const { error } = await supabase.from("salidas_nombres").insert([
       {
-        tipo: "salida",
-        proyecto_id: proyecto,
-        coordinador_id: coordinador,
-        sst_id: sst,
-        operador_id: operador,
-        fecha_hora: fechaHora
+        proyecto,
+        coordinador: coordinadorNombre,
+        sst: sstNombre,
+        operadores: operadoresNombres, // se guarda como array de strings o jsonb
+        fecha_hora: new Date().toISOString()
       }
     ]);
 
     if (error) {
       alert("Error al registrar salida: " + error.message);
     } else {
-      alert("Salida registrada correctamente");
       setProyecto("");
       setCoordinador("");
       setSst("");
-      setOperador("");
+      setOperadoresSeleccionados([]);
+      setMensajeExito("¡Salida registrada correctamente! Muchas gracias.");
     }
   };
 
@@ -78,12 +100,13 @@ export default function RegistroSalida() {
       >
         <h2 style={{ textAlign: "center" }}>Registro de Salida</h2>
 
-        <select value={proyecto} onChange={e => setProyecto(e.target.value)} required>
-          <option value="">Proyecto</option>
-          {proyectos.map(p => (
-            <option key={p.id} value={p.id}>{p.nombre}</option>
-          ))}
-        </select>
+        <input
+          type="text"
+          placeholder="Proyecto"
+          value={proyecto}
+          onChange={e => setProyecto(e.target.value)}
+          required
+        />
 
         <select value={coordinador} onChange={e => setCoordinador(e.target.value)} required>
           <option value="">Coordinador</option>
@@ -99,12 +122,19 @@ export default function RegistroSalida() {
           ))}
         </select>
 
-        <select value={operador} onChange={e => setOperador(e.target.value)} required>
-          <option value="">Operario</option>
-          {operadores.map(o => (
-            <option key={o.id} value={o.id}>{o.nombre}</option>
+        <label>Operarios (mín 1, máximo 6)</label>
+        <div style={{ display: "flex", flexDirection: "column", gap: "5px", maxHeight: "150px", overflowY: "auto" }}>
+          {operarios.map((op) => (
+            <label key={op.id} style={{ fontSize: "12px" }}>
+              <input
+                type="checkbox"
+                checked={operadoresSeleccionados.includes(op.id)}
+                onChange={() => handleCheckboxChange(op.id)}
+              />
+              {" "}{op.nombre}
+            </label>
           ))}
-        </select>
+        </div>
 
         <button
           type="submit"
@@ -120,6 +150,8 @@ export default function RegistroSalida() {
         >
           Registrar Salida
         </button>
+
+        {mensajeExito && <p style={{ color: "#2d6a4f", textAlign: "center", marginTop: "10px" }}>{mensajeExito}</p>}
       </form>
     </div>
   );
