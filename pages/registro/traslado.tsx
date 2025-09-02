@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, FormEvent } from "react";
-import supabase from '../../lib/supabaseClient'; // <-- cliente central
+import supabase from '../../lib/supabaseClient';
 
 export default function RegistroTraslado() {
   const [coordinadores, setCoordinadores] = useState<any[]>([]);
@@ -11,9 +11,17 @@ export default function RegistroTraslado() {
   const [hasta, setHasta] = useState("");
   const [coordinador, setCoordinador] = useState("");
   const [sst, setSst] = useState("");
-  const [operadoresSeleccionados, setOperadoresSeleccionados] = useState<string[]>([]);
+  const [operario1, setOperario1] = useState("");
+  const [operario2, setOperario2] = useState("");
+  const [operario3, setOperario3] = useState("");
+  const [operario4, setOperario4] = useState("");
+  const [operario5, setOperario5] = useState("");
+  const [operario6, setOperario6] = useState("");
+  const [observacion, setObservacion] = useState("");
+  const [ubicacion, setUbicacion] = useState("");
   const [mensajeExito, setMensajeExito] = useState("");
 
+  // Traer datos iniciales
   useEffect(() => {
     const fetchData = async () => {
       const { data: coordData } = await supabase.from("coordinadores").select("*");
@@ -28,33 +36,33 @@ export default function RegistroTraslado() {
     fetchData();
   }, []);
 
-  const handleCheckboxChange = (id: string) => {
-    if (operadoresSeleccionados.includes(id)) {
-      setOperadoresSeleccionados(operadoresSeleccionados.filter(op => op !== id));
-    } else if (operadoresSeleccionados.length < 6) {
-      setOperadoresSeleccionados([...operadoresSeleccionados, id]);
-    } else {
-      alert("Máximo 6 operarios permitidos");
+  // Capturar ubicación en tiempo real
+  useEffect(() => {
+    if (navigator.geolocation) {
+      const watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setUbicacion(`https://www.google.com/maps?q=${latitude},${longitude}`);
+        },
+        (err) => {
+          console.error("Error al obtener ubicación:", err);
+          setUbicacion("No disponible");
+        },
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+      );
+
+      return () => navigator.geolocation.clearWatch(watchId);
     }
-  };
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (operadoresSeleccionados.length < 1) {
-      alert("Selecciona al menos 1 operario");
-      return;
-    }
-
-    const operadoresNombres = operadoresSeleccionados
-      .map(id => operarios.find(o => o.id === id)?.nombre)
-      .filter(Boolean) as string[];
-
     const coordinadorNombre = coordinadores.find(c => c.id === coordinador)?.nombre;
     const sstNombre = ssts.find(s => s.id === sst)?.nombre;
 
-    if (!coordinadorNombre || !sstNombre) {
-      alert("Selecciona un coordinador y SST válidos");
+    if (!coordinadorNombre || !sstNombre || !operario1) {
+      alert("Debes seleccionar coordinador, SST y al menos un operario");
       return;
     }
 
@@ -64,7 +72,14 @@ export default function RegistroTraslado() {
         proyecto_hasta: hasta,
         coordinador: coordinadorNombre,
         sst: sstNombre,
-        operadores: operadoresNombres,
+        operario1,
+        operario2,
+        operario3,
+        operario4,
+        operario5,
+        operario6,
+        observacion,
+        ubicacion,
         fecha_hora: new Date().toISOString()
       }
     ]);
@@ -76,7 +91,13 @@ export default function RegistroTraslado() {
       setHasta("");
       setCoordinador("");
       setSst("");
-      setOperadoresSeleccionados([]);
+      setOperario1("");
+      setOperario2("");
+      setOperario3("");
+      setOperario4("");
+      setOperario5("");
+      setOperario6("");
+      setObservacion("");
       setMensajeExito("¡Traslado registrado correctamente! Muchas gracias.");
     }
   };
@@ -127,19 +148,34 @@ export default function RegistroTraslado() {
           ))}
         </select>
 
-        <label>Operarios (mín 1, máximo 6)</label>
-        <div style={{ display: "flex", flexDirection: "column", gap: "5px", maxHeight: "150px", overflowY: "auto" }}>
-          {operarios.map(op => (
-            <label key={op.id} style={{ fontSize: "12px" }}>
-              <input
-                type="checkbox"
-                checked={operadoresSeleccionados.includes(op.id)}
-                onChange={() => handleCheckboxChange(op.id)}
-              />
-              {" "}{op.nombre}
-            </label>
-          ))}
-        </div>
+        {/* Seis campos de operario */}
+        {[ 
+          {label: "Operario 1", value: operario1, set: setOperario1, required: true},
+          {label: "Operario 2", value: operario2, set: setOperario2},
+          {label: "Operario 3", value: operario3, set: setOperario3},
+          {label: "Operario 4", value: operario4, set: setOperario4},
+          {label: "Operario 5", value: operario5, set: setOperario5},
+          {label: "Operario 6", value: operario6, set: setOperario6}
+        ].map((op, idx) => (
+          <select
+            key={idx}
+            value={op.value}
+            onChange={e => op.set(e.target.value)}
+            required={op.required}
+          >
+            <option value="">{op.label}</option>
+            {operarios.map(o => (
+              <option key={o.id} value={o.nombre}>{o.nombre}</option>
+            ))}
+          </select>
+        ))}
+
+        <textarea
+          placeholder="Observaciones"
+          value={observacion}
+          onChange={e => setObservacion(e.target.value)}
+          style={{ resize: "none", minHeight: "60px" }}
+        />
 
         <button
           type="submit"

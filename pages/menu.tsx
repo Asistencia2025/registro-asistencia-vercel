@@ -24,39 +24,35 @@ export default function Menu() {
         <h2 style={{ marginBottom: "20px", color: "#2d6a4f" }}>Menú Principal</h2>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-          <Link href="/registro/entrada" style={{
+          {/* Opción unificada de Registro */}
+          <Link
+            href="/registro"
+            style={{
               padding: "12px",
               borderRadius: "6px",
               background: "#2d6a4f",
               color: "#fff",
               textDecoration: "none",
               fontWeight: "bold",
-              textAlign: "center"
-            }}>
-            Registrar Entrada
+              textAlign: "center",
+            }}
+          >
+            Registrar Entrada / Salida
           </Link>
 
-          <Link href="/registro/salida" style={{
-              padding: "12px",
-              borderRadius: "6px",
-              background: "#40916c",
-              color: "#fff",
-              textDecoration: "none",
-              fontWeight: "bold",
-              textAlign: "center"
-            }}>
-            Registrar Salida
-          </Link>
-
-          <Link href="/registro/traslado" style={{
+          {/* Opción Traslado */}
+          <Link
+            href="/registro/traslado"
+            style={{
               padding: "12px",
               borderRadius: "6px",
               background: "#74c69d",
               color: "#fff",
               textDecoration: "none",
               fontWeight: "bold",
-              textAlign: "center"
-            }}>
+              textAlign: "center",
+            }}
+          >
             Registrar Traslado
           </Link>
         </div>
@@ -64,4 +60,3 @@ export default function Menu() {
     </div>
   );
 }
-
