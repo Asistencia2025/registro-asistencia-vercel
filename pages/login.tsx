@@ -19,17 +19,24 @@ export default function Login() {
     const { data, error } = await supabase
       .from("usuarios_login")
       .select("id, email, password, rol, activo")
-      .eq("email", email)
+      .eq("email", email.trim())
       .eq("password", password)
       .eq("activo", true)
       .single();
 
     setLoading(false);
 
-    if (error || !data) {
-      setError("Usuario o contraseña incorrectos");
-      return;
-    }
+    if (error) {
+  console.error("ERROR SUPABASE:", error);
+  setError(`Error Supabase: ${error.message}`);
+  return;
+}
+
+if (!data) {
+  console.error("NO SE ENCONTRÓ EL USUARIO");
+  setError("No se encontró el usuario");
+  return;
+}
 
     // Guardamos los datos básicos de la sesión
     localStorage.setItem(
