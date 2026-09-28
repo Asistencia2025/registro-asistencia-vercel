@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, FormEvent } from "react";
-import supabase from "../../lib/supabaseClient"; // asegúrate que esta ruta existe
+import supabase from "../../lib/supabaseClient";
 
 interface Persona {
-  id: string;
+  id: number;
   nombre: string;
 }
 
@@ -19,43 +19,77 @@ export default function RegistroUnificado() {
   const [coordinador, setCoordinador] = useState("");
   const [sst, setSst] = useState("");
 
-  const [operadoresSeleccionados, setOperadoresSeleccionados] = useState<string[]>(
-    () => Array(10).fill("")
-  );
+  const [operadoresSeleccionados, setOperadoresSeleccionados] = useState<
+    string[]
+  >(() => Array(10).fill(""));
 
   const [observaciones, setObservaciones] = useState("");
   const [mensajeExito, setMensajeExito] = useState("");
   const [cargando, setCargando] = useState(false);
 
-  // ubicación (una sola vez)
+  // Ubicación
   const [ubicacionLink, setUbicacionLink] = useState<string | null>(null);
   const [ubicStatus, setUbicStatus] = useState<string>("No obtenida");
 
   useEffect(() => {
-    // traer opciones
     const fetchData = async () => {
       try {
-        const { data: coordData } = await supabase.from("coordinadores").select("*");
-        const { data: sstData } = await supabase.from("ssts").select("*");
-        const { data: opData } = await supabase.from("operarios").select("*");
+        const { data: coordData, error: coordError } = await supabase
+          .from("coordinadores")
+          .select("*")
+          .eq("activo", true);
 
-        if (coordData) setCoordinadores(coordData);
-        if (sstData) setSsts(sstData);
-        if (opData) setOperarios(opData);
+        const { data: sstData, error: sstError } = await supabase
+          .from("ssts")
+          .select("*")
+          .eq("activo", true);
+
+        const { data: opData, error: opError } = await supabase
+          .from("operarios")
+          .select("*")
+          .eq("activo", true);
+
+        if (coordError) {
+          console.error("Error coordinadores:", coordError);
+        }
+
+        if (sstError) {
+          console.error("Error SST:", sstError);
+        }
+
+        if (opError) {
+          console.error("Error operarios:", opError);
+        }
+
+        if (coordData) {
+          setCoordinadores(coordData);
+        }
+
+        if (sstData) {
+          setSsts(sstData);
+        }
+
+        if (opData) {
+          setOperarios(opData);
+        }
       } catch (error: any) {
-        console.error("Error fetching data:", error.message);
+        console.error("Error general cargando datos:", error);
       }
     };
+
     fetchData();
 
-    // obtener ubicación una sola vez
+    // Obtener ubicación una sola vez
     if ("geolocation" in navigator) {
       setUbicStatus("Obteniendo ubicación...");
+
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
+
           const linkMaps = `https://www.google.com/maps?q=${lat},${lng}`;
+
           setUbicacionLink(linkMaps);
           setUbicStatus("Ubicación obtenida ✅");
         },
@@ -63,7 +97,10 @@ export default function RegistroUnificado() {
           console.error("Error geolocalización:", err);
           setUbicStatus("Permiso denegado o error");
         },
-        { enableHighAccuracy: true, timeout: 10000 }
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+        }
       );
     } else {
       setUbicStatus("Geolocalización no soportada");
@@ -83,23 +120,54 @@ export default function RegistroUnificado() {
       alert("Selecciona si es Entrada o Salida");
       return;
     }
+
     if (!coordinador || !sst) {
       alert("Selecciona un coordinador y un SST");
       return;
     }
 
-    const seleccionadosNoVacios = operadoresSeleccionados.filter((v) => v && v.trim() !== "");
+    const seleccionadosNoVacios = operadoresSeleccionados.filter(
+      (v) => v && v.trim() !== ""
+    );
+
     if (seleccionadosNoVacios.length < 1) {
       alert("Selecciona al menos 1 operario");
       return;
     }
 
-    const operadoresNombres = operadoresSeleccionados.map((id) =>
-      id ? operarios.find((o) => o.id === id)?.nombre ?? null : null
+    // Obtener nombres de los operarios seleccionados
+    const operadoresNombres = operadoresSeleccionados.map((id) => {
+      if (!id) {
+        return null;
+      }
+
+      const operario = operarios.find(
+        (o) => String(o.id) === String(id)
+      );
+
+      return operario?.nombre ?? null;
+    });
+
+    // Obtener nombre del coordinador
+    const coordinadorEncontrado = coordinadores.find(
+      (c) => String(c.id) === String(coordinador)
     );
 
-    const coordinadorNombre = coordinadores.find((c) => c.id === coordinador)?.nombre;
-    const sstNombre = ssts.find((s) => s.id === sst)?.nombre;
+    const coordinadorNombre = coordinadorEncontrado?.nombre;
+
+    // Obtener nombre del SST
+    const sstEncontrado = ssts.find(
+      (s) => String(s.id) === String(sst)
+    );
+
+    const sstNombre = sstEncontrado?.nombre;
+
+    console.log("Coordinador seleccionado:", coordinador);
+    console.log("Coordinador encontrado:", coordinadorEncontrado);
+
+    console.log("SST seleccionado:", sst);
+    console.log("SST encontrado:", sstEncontrado);
+
     if (!coordinadorNombre || !sstNombre) {
       alert("Datos de coordinador o SST inválidos");
       return;
@@ -111,22 +179,31 @@ export default function RegistroUnificado() {
       sst: sstNombre,
       observaciones,
       fecha_hora: new Date().toISOString(),
-      ubicacion_link: ubicacionLink, // 👈 ahora se guarda el link en lugar de lat/lon
+      ubicacion_link: ubicacionLink,
     };
 
+    // Guardar los 10 posibles operarios
     for (let i = 0; i < 10; i++) {
       payload[`operario${i + 1}`] = operadoresNombres[i] ?? null;
     }
 
-    const tabla = tipo === "entrada" ? "ingresos_nombres" : "salidas_nombres";
+    const tabla =
+      tipo === "entrada" ? "ingresos_nombres" : "salidas_nombres";
 
-    setCargando(true); 
-    setMensajeExito("Procesando registro..."); 
+    setCargando(true);
+    setMensajeExito("Procesando registro...");
 
-    const { error } = await supabase.from(tabla).insert([payload]);
+    const { error } = await supabase
+      .from(tabla)
+      .insert([payload]);
 
     if (error) {
-      alert(`Error al registrar ${tipo}: ` + error.message);
+      console.error("Error al registrar:", error);
+
+      alert(
+        `Error al registrar ${tipo}: ${error.message}`
+      );
+
       setMensajeExito("");
     } else {
       setProyecto("");
@@ -141,7 +218,9 @@ export default function RegistroUnificado() {
           : "¡Salida registrada correctamente! Muchas gracias."
       );
 
-      setTimeout(() => setMensajeExito(""), 5000);
+      setTimeout(() => {
+        setMensajeExito("");
+      }, 5000);
     }
 
     setCargando(false);
@@ -193,57 +272,138 @@ export default function RegistroUnificado() {
         }}
       >
         <h2 style={{ textAlign: "center" }}>
-          {tipo ? `Registro de ${tipo === "entrada" ? "Entrada" : "Salida"}` : "Registro de Asistencia"}
+          {tipo
+            ? `Registro de ${
+                tipo === "entrada" ? "Entrada" : "Salida"
+              }`
+            : "Registro de Asistencia"}
         </h2>
 
+        {/* Entrada / Salida */}
         <div style={{ display: "flex", gap: "10px" }}>
-          <button type="button" onClick={() => setTipo("entrada")} style={tipo === "entrada" ? btnToggle : btnToggleInactive}>
+          <button
+            type="button"
+            onClick={() => setTipo("entrada")}
+            style={
+              tipo === "entrada"
+                ? btnToggle
+                : btnToggleInactive
+            }
+          >
             Entrada
           </button>
-          <button type="button" onClick={() => setTipo("salida")} style={tipo === "salida" ? btnToggle : btnToggleInactive}>
+
+          <button
+            type="button"
+            onClick={() => setTipo("salida")}
+            style={
+              tipo === "salida"
+                ? btnToggle
+                : btnToggleInactive
+            }
+          >
             Salida
           </button>
         </div>
 
-        <input type="text" placeholder="Proyecto" value={proyecto} onChange={(e) => setProyecto(e.target.value)} required />
+        {/* Proyecto */}
+        <input
+          type="text"
+          placeholder="Proyecto"
+          value={proyecto}
+          onChange={(e) => setProyecto(e.target.value)}
+          required
+        />
 
-        <select value={coordinador} onChange={(e) => setCoordinador(e.target.value)} required>
+        {/* Coordinador */}
+        <select
+          value={coordinador}
+          onChange={(e) => setCoordinador(e.target.value)}
+          required
+        >
           <option value="">Coordinador</option>
+
           {coordinadores.map((c) => (
-            <option key={c.id} value={c.id}>{c.nombre}</option>
+            <option
+              key={c.id}
+              value={String(c.id)}
+            >
+              {c.nombre}
+            </option>
           ))}
         </select>
 
-        <select value={sst} onChange={(e) => setSst(e.target.value)} required>
+        {/* SST */}
+        <select
+          value={sst}
+          onChange={(e) => setSst(e.target.value)}
+          required
+        >
           <option value="">SST</option>
+
           {ssts.map((s) => (
-            <option key={s.id} value={s.id}>{s.nombre}</option>
+            <option
+              key={s.id}
+              value={String(s.id)}
+            >
+              {s.nombre}
+            </option>
           ))}
         </select>
 
-        <label>Operarios (mín 1, máximo 10)</label>
+        {/* Operarios */}
+        <label>
+          Operarios (mín 1, máximo 10)
+        </label>
+
         {[...Array(10)].map((_, i) => (
           <select
             key={i}
             value={operadoresSeleccionados[i] || ""}
-            onChange={(e) => handleOperarioChange(i, e.target.value)}
+            onChange={(e) =>
+              handleOperarioChange(
+                i,
+                e.target.value
+              )
+            }
             style={{ marginBottom: "6px" }}
           >
-            <option value="">-- Seleccionar operario --</option>
+            <option value="">
+              -- Seleccionar operario --
+            </option>
+
             {operarios.map((op) => (
-              <option key={op.id} value={op.id}>{op.nombre}</option>
+              <option
+                key={op.id}
+                value={String(op.id)}
+              >
+                {op.nombre}
+              </option>
             ))}
           </select>
         ))}
 
-        {/* Ubicación (ahora muestra link en vez de coordenadas) */}
-        <div style={{ fontSize: "12px", marginTop: "6px" }}>
-          <div style={{ marginBottom: "4px" }}>Ubicación</div>
+        {/* Ubicación */}
+        <div
+          style={{
+            fontSize: "12px",
+            marginTop: "6px",
+          }}
+        >
+          <div style={{ marginBottom: "4px" }}>
+            Ubicación
+          </div>
+
           <div style={{ color: "#333" }}>
             {ubicStatus}
+
             {ubicacionLink && (
               <div style={{ marginTop: "4px" }}>
-                <a href={ubicacionLink} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={ubicacionLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Ver en Google Maps
                 </a>
               </div>
@@ -251,18 +411,50 @@ export default function RegistroUnificado() {
           </div>
         </div>
 
+        {/* Observaciones */}
         <textarea
           placeholder="Observaciones del coordinador"
           value={observaciones}
-          onChange={(e) => setObservaciones(e.target.value)}
-          style={{ minHeight: "60px", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+          onChange={(e) =>
+            setObservaciones(e.target.value)
+          }
+          style={{
+            minHeight: "60px",
+            padding: "8px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
         />
 
-        <button type="submit" style={btnBase} disabled={cargando}>
-          {cargando ? "Registrando..." : tipo ? `Registrar ${tipo === "entrada" ? "Entrada" : "Salida"}` : "Registrar"}
+        {/* Botón */}
+        <button
+          type="submit"
+          style={btnBase}
+          disabled={cargando}
+        >
+          {cargando
+            ? "Registrando..."
+            : tipo
+            ? `Registrar ${
+                tipo === "entrada"
+                  ? "Entrada"
+                  : "Salida"
+              }`
+            : "Registrar"}
         </button>
 
-        {mensajeExito && <p style={{ color: "#2d6a4f", textAlign: "center", marginTop: "6px" }}>{mensajeExito}</p>}
+        {/* Mensaje */}
+        {mensajeExito && (
+          <p
+            style={{
+              color: "#2d6a4f",
+              textAlign: "center",
+              marginTop: "6px",
+            }}
+          >
+            {mensajeExito}
+          </p>
+        )}
       </form>
     </div>
   );
